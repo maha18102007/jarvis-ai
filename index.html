@@ -1,0 +1,106 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>JARVIS AI</title>
+<style>
+*{box-sizing:border-box}
+body{
+ margin:0;background:#050d19;color:#eafaff;
+ font-family:-apple-system,BlinkMacSystemFont,Arial;
+ text-align:center;padding:25px 16px;
+}
+h1{letter-spacing:9px;color:#72ddff}
+.sub{color:#8baabd;font-size:12px;letter-spacing:3px}
+.orb{
+ width:165px;height:165px;border-radius:50%;
+ margin:40px auto 25px;
+ background:radial-gradient(circle,#72eaff,#12658e 35%,#07182d 70%);
+ box-shadow:0 0 35px #19bfff99;
+ animation:pulse 3s infinite;
+}
+@keyframes pulse{50%{transform:scale(1.06);box-shadow:0 0 65px #19bfff}}
+#status{color:#6ee6ba;font-size:13px}
+.panel{
+ max-width:500px;margin:25px auto;
+ background:#0c1b2c;border:1px solid #24445e;
+ border-radius:18px;padding:16px;
+}
+#chat{height:230px;overflow:auto;text-align:left}
+.msg{padding:11px;margin:9px 0;border-radius:12px;background:#17334b}
+input{
+ width:68%;padding:13px;border-radius:10px;
+ background:#07111f;border:1px solid #42627b;color:white;
+}
+button{
+ padding:13px;border:0;border-radius:10px;
+ background:#147da8;color:white;font-weight:bold;
+ margin:5px;
+}
+</style>
+</head>
+<body>
+<div class="sub">PERSONAL INTELLIGENCE SYSTEM</div>
+<div class="orb"></div>
+<h1>JARVIS</h1>
+<p id="status">● SYSTEM ONLINE</p>
+<div class="panel">
+ <div id="chat">
+  <div class="msg">Good day! I am JARVIS. How may I assist you?</div>
+ </div>
+ <input id="message" placeholder="Talk to JARVIS...">
+ <button onclick="send()">SEND</button>
+ <button onclick="speak()">🔊</button>
+ <button onclick="listen()">🎙</button>
+</div>
+<script>
+function reply(text){
+ let answer="I'm your JARVIS prototype. Your AI brain will be connected in the next version.";
+ if(/hello|hi/i.test(text)) answer="Good day! JARVIS is online. How can I help?";
+ if(/your name/i.test(text)) answer="I am JARVIS, your personal assistant.";
+ if(/time/i.test(text)) answer="The current time is "+new Date().toLocaleTimeString();
+ if(/date/i.test(text)) answer="Today is "+new Date().toDateString();
+ return answer;
+}
+function add(text){
+ let d=document.createElement("div");
+ d.className="msg";d.textContent=text;
+ document.getElementById("chat").appendChild(d);
+}
+function send(){
+ let box=document.getElementById("message");
+ let text=box.value.trim();
+ if(!text)return;
+ add("You: "+text);
+ let answer=reply(text);
+ add("JARVIS: "+answer);
+ box.value="";
+ document.getElementById("status").textContent="● READY";
+}
+function speak(){
+ let last=document.querySelectorAll(".msg");
+ let text=last[last.length-1]?.textContent||"JARVIS online";
+ let speech=new SpeechSynthesisUtterance(text);
+ speech.lang="en-GB";
+ speechSynthesis.speak(speech);
+}
+function listen(){
+ let Recognition=window.SpeechRecognition||window.webkitSpeechRecognition;
+ if(!Recognition){
+  document.getElementById("status").textContent="Use your iPhone keyboard microphone";
+  return;
+ }
+ let r=new Recognition();
+ r.lang="en-IN";
+ r.onstart=()=>document.getElementById("status").textContent="● LISTENING";
+ r.onresult=e=>{
+  document.getElementById("message").value=e.results[0][0].transcript;
+  send();
+ };
+ r.onerror=()=>document.getElementById("status").textContent="● TRY AGAIN";
+ r.start();
+}
+</script>
+</body>
+</html>
